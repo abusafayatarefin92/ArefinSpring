@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table,th,td {
+            border : 1px solid black;
+            border-collapse: collapse;
+        }
+        th,td {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>The XMLHttpRequest Object</h1>
+
+<form action="">
+    <select onchange="showCustomer(this.value)">
+        <option value="">Select a customer:</option>
+        <option th:each="c : ${countrylist}" th:value="${c.id}" th:text="${c.country}"></option>
+
+    </select>
+<hr/>
+    <select id="city-dropdown" name="city">
+        <option value="0">Select a CIty</option>
+    </select>
+</form>
+<br>
+<div id="txtHint">Customer info will be listed here...</div>
+
+<script>
+
+
+    ///////////////////
+    function showCustomer(id) {
+     var dropdown = document.getElementById('city-dropdown');
+    dropdown.length = 0;
+
+    var defaultOption = document.createElement('option');
+    defaultOption.text = 'Select A City';
+    dropdown.add(defaultOption);
+    dropdown.selectedIndex = 0;
+
+
+
+        var xhttp;
+        if (id == "") {
+            document.getElementById("txtHint").innerHTML = "";
+            return;
+        }
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("txtHint").innerHTML = this.responseText;
+                var data = JSON.parse(this.responseText);
+                var option;
+               for (var i = 0; i < data.length; i++) {
+                    option = document.createElement('option');
+                    option.text = data[i].city;
+                    option.value = data[i].id;
+                    dropdown.add(option);
+                }
+            }
+        };
+        xhttp.open("GET", "/city?id="+id, true);
+        xhttp.send();
+    }
+</script>
+
+<!--https://www.codebyamir.com/blog/populate-a-select-dropdown-list-with-json-->
+</body>
+</html>
